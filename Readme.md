@@ -37,13 +37,47 @@ Any options not included in this list will be passed to the redis `createClient(
 
 Pass the `express-session` store into `connect-redis` to create a `RedisStore` constructor.
 
-    var session = require('express-session');
-    var RedisStore = require('connect-redis')(session);
+```
+var express = require("express");
+var session = require("express-session");
+var RedisStore = require("express-django-redis-session")(session);
+var middleware = require("express-django-redis-session/middleware");
 
-    app.use(session({
-        store: new RedisStore(options),
-        secret: 'keyboard cat'
-    }));
+var app = express();
+
+var sidName = "sessionid";
+var secret = "secret";
+var cookieName = "sess";
+
+var cookieOptions = {
+  path: '/',
+  httpOnly: true,
+  secure: false,
+  maxAge: null,
+  domain: '.example.com'
+}
+
+app.use(middleware({
+  sidName: sidName,
+  secret: secret,
+  cookieName: cookieName,
+  cookie: cookieOptions
+}));
+
+app.use(session({
+  store: new RedisStore({
+    host: 'localhost',
+    port: 6379,
+    db: 0,
+    prefix: 'session:'
+  }),
+  secret: secret,
+  resave: false,
+  saveUninitialized: false,
+  name: cookieName,
+  cookie: cookieOptions
+}));
+```
 
 ## FAQ
 
