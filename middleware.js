@@ -15,11 +15,13 @@ module.exports = function(options) {
   return function(req, res, next) {
     var cookies, original, signed;
     original = req.headers.cookie;
-    debug('original-header: %s', original);
-    cookies = cookie.parse(original);
-    signed = 's:' + signature.sign(cookies[sidName], secret);
-    req.headers.cookie = original + "; " + cookie.serialize(cookieName, signed, cookieOptions);
-    debug('modified-header: %s', req.headers.cookie);
+    if(original) {
+      debug('original-header: %s', original);
+      cookies = cookie.parse(original);
+      signed = 's:' + signature.sign(cookies[sidName], secret);
+      req.headers.cookie = original + "; " + cookie.serialize(cookieName, signed, cookieOptions);
+      debug('modified-header: %s', req.headers.cookie);
+    }
     return next();
   };
 };
