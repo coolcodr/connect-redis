@@ -15,7 +15,8 @@ module.exports = function(options) {
   return function(req, res, next) {
     var cookies, original, signed;
     original = req.headers.cookie;
-    if(original) {
+    foundCookie = original.indexOf(cookieName) >= 0
+    if(original && foundCookie) {
       debug('original-header: %s', original);
       cookies = cookie.parse(original);
       signed = 's:' + signature.sign(cookies[sidName], secret);
