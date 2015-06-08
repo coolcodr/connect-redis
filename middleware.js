@@ -6,6 +6,10 @@ signature = require('cookie-signature');
 
 debug = require('debug')('connect:redis');
 
+isNotNull = function(val) {
+  return typeof val !== "undefined" && val !== null
+}
+
 module.exports = function(options) {
   var cookieName, cookieOptions, secret, sidName;
   sidName = options.sidName;
@@ -15,8 +19,8 @@ module.exports = function(options) {
   return function(req, res, next) {
     var cookies, original, signed;
     original = req.headers.cookie;
-    foundCookie = original.indexOf(cookieName) >= 0
-    if(original && foundCookie) {
+    foundCookie = isNotNull(original) && original.indexOf(cookieName) >= 0
+    if(foundCookie) {
       debug('original-header: %s', original);
       cookies = cookie.parse(original);
       signed = 's:' + signature.sign(cookies[sidName], secret);
