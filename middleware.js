@@ -11,11 +11,12 @@ isNotNull = function(val) {
 }
 
 module.exports = function(options) {
-  var cookieName, cookieOptions, secret, sidName, sessionId;
+  var cookieName, cookieOptions, secret, sidName, sessionId, csrfTokenName;
   sidName = options.sidName;
   secret = options.secret;
   cookieName = options.cookieName;
   cookieOptions = options.cookie;
+  csrfTokenName = options.csrfTokenName;
   return function(req, res, next) {
     var cookies, original, signed;
     original = req.headers.cookie;
@@ -25,6 +26,7 @@ module.exports = function(options) {
       debug('original-header: %s', original);
       cookies = cookie.parse(original);
       sessionId = cookies[sidName];
+      req.csrfToken = cookies[csrfTokenName];
       debug('sessionId: ' + sessionId);
       if(!sessionId) return next();
       signed = 's:' + signature.sign(sessionId, secret);
